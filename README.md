@@ -176,28 +176,10 @@ axiosConfig({
 具体参考 [axios](https://github.com/axios/axios) API
 
 ## 其他
-### 在[uniapp](https://github.com/axios/axios)中使用
+### 在uniapp中使用
 ```js
 import axios from 'happy-axios';
-import settle from 'axios/lib/core/settle';
+import adapter from 'uni-request-adapter';
 
-axios.defaults.adapter = (config) => {
-  return new Promise((resolve, reject) => {
-    const { baseURL, url, headers, data, params, ...rest } = config;
-    uni.request({
-      ...rest,
-      url: baseURL + url,
-      header: headers,
-      data: params || data,
-      complete({ statusCode, header, ...rest }) {
-        settle(resolve, reject, {
-          ...rest,
-          status: statusCode,
-          headers: header,
-          config
-        });
-      },
-    });
-  });
-};
+axios.defaults.adapter = adapter;
 ```
