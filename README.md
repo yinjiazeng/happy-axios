@@ -14,7 +14,9 @@ npm i --save happy-axios
 ```
 ### 使用
 ```js
-import { createService } from 'happy-axios';
+import axios, { createService } from 'happy-axios';
+
+axios.defaults.baseURL = '/';
 
 const service = createService({
   getList: 'GET /path/getList',
@@ -70,7 +72,7 @@ service.save({ name: 'xxx' }).then(...);
 mockData参数为可选的，是别名和mock对象的键值对，可以在开发环境本地模拟接口数据，生产环境该功能会被禁用，为了防止模拟数据被打包到代码里，最好用process.env.NODE_ENV判断，推荐 [mockjs](http://mockjs.com/) 来进行数据模拟。
 ```js
 createService({
-  getList: '/path',
+  getList: 'GET /path',
   save: 'POST /path',
 }, process.env.NODE_ENV !== 'production' ? {
   getList: Mock.mock({...})
@@ -102,7 +104,7 @@ const service = createService({
 
 service.save().then(...);
 ```
-通过该方式也可以创建jsonp的请求，这里需要适用第三方包 [axios-jsonp](https://github.com/AdonisLau/axios-jsonp)。
+通过该方式也可以创建jsonp的请求，这里需要使用第三方包 [axios-jsonp](https://github.com/AdonisLau/axios-jsonp)。
 ```js
 import jsonpAdapter from 'axios-jsonp';
 
@@ -172,3 +174,32 @@ axiosConfig({
 
 ### axios
 具体参考 [axios](https://github.com/axios/axios) API
+
+## 案例
+### 在[uniapp](https://github.com/axios/axios)中使用
+```js
+import axios from 'happy-axios';
+import settle from 'axios/lib/core/settle';
+
+axios.defaults.baseURL = 'https://api.test.com';
+axios.defaults.timeout = 60000;
+axios.defaults.adapter = (config) => {
+  return new Promise((resolve, reject) => {
+    const { baseURL, url, headers, data, params, ...rest } = config;
+    uni.request({
+      ...rest,
+      url: baseURL + url,
+      header: headers,
+      data: params || data,
+      complete({ statusCode, header, ...rest }) {
+        settle(resolve, reject, {
+          ...rest,
+          status: statusCode,
+          headers: header,
+          config
+        });
+      },
+    });
+  });
+};
+```
