@@ -175,14 +175,12 @@ axiosConfig({
 ### axios
 具体参考 [axios](https://github.com/axios/axios) API
 
-## 案例
+## 其他
 ### 在[uniapp](https://github.com/axios/axios)中使用
 ```js
 import axios from 'happy-axios';
 import settle from 'axios/lib/core/settle';
 
-axios.defaults.baseURL = 'https://api.test.com';
-axios.defaults.timeout = 60000;
 axios.defaults.adapter = (config) => {
   return new Promise((resolve, reject) => {
     const { baseURL, url, headers, data, params, ...rest } = config;
